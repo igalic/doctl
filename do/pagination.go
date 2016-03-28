@@ -1,4 +1,3 @@
-
 /*
 Copyright 2016 The Doctl Authors All rights reserved.
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -94,7 +93,7 @@ func fetchPage(gen Generator, page int) ([]interface{}, error) {
 }
 
 func lastPage(resp *godo.Response) (int, error) {
-	if resp.Links.Pages == nil {
+	if resp.Links == nil || resp.Links.Pages == nil {
 		// no other pages
 		return 1, nil
 	}

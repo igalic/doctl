@@ -56,7 +56,8 @@ type Client struct {
 	FloatingIPs       FloatingIPsService
 	FloatingIPActions FloatingIPActionsService
 	Tags              TagsService
-
+	Storage           StorageService
+	StorageActions    StorageActionsService
 	// Optional function called after every successful request made to the DO APIs
 	onRequestCompleted RequestCompletionCallback
 }
@@ -158,6 +159,8 @@ func NewClient(httpClient *http.Client) *Client {
 	c.FloatingIPs = &FloatingIPsServiceOp{client: c}
 	c.FloatingIPActions = &FloatingIPActionsServiceOp{client: c}
 	c.Tags = &TagsServiceOp{client: c}
+	c.Storage = &StorageServiceOp{client: c}
+	c.StorageActions = &StorageActionsServiceOp{client: c}
 
 	return c
 }

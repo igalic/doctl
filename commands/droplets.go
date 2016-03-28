@@ -62,6 +62,8 @@ func Droplet() *Command {
 	AddBoolFlag(cmdDropletCreate, doit.ArgPrivateNetworking, false, "Private networking")
 	AddStringFlag(cmdDropletCreate, doit.ArgImage, "", "Droplet image",
 		requiredOpt())
+	// Note: Adding Drives will only work for accounts in the block storage private beta
+	AddStringSliceFlag(cmdDropletCreate, doit.ArgDriveList, []string{}, "Drives to attach")
 
 	CmdBuilder(cmd, RunDropletDelete, "delete ID [ID|Name ...]", "Delete droplet by id or name", Writer,
 		aliasOpt("d", "del", "rm"), docCategories("droplet"))
@@ -173,6 +175,12 @@ func RunDropletCreate(c *CmdConfig) error {
 		return err
 	}
 
+	driveList, err := c.Doit.GetStringSlice(c.NS, doit.ArgDriveList)
+	if err != nil {
+		return err
+	}
+	drives := extractDrives(driveList)
+
 	var createImage godo.DropletCreateImage
 
 	imageStr, err := c.Doit.GetString(c.NS, doit.ArgImage)
@@ -202,6 +210,7 @@ func RunDropletCreate(c *CmdConfig) error {
 			PrivateNetworking: privateNetworking,
 			SSHKeys:           sshKeys,
 			UserData:          userData,
+			Drives:            drives,
 		}
 
 		wg.Add(1)
@@ -254,6 +263,21 @@ func extractSSHKeys(keys []string) []godo.DropletCreateSSHKey {
 	}
 
 	return sshKeys
+}
+
+func extractDrives(driveList []string) []godo.DropletDriveRequest {
+	drives := []godo.DropletDriveRequest{}
+
+	for _, rawDrive := range driveList {
+		rawDrive = strings.TrimPrefix(rawDrive, "[")
+		rawDrive = strings.TrimSuffix(rawDrive, "]")
+
+		list := strings.Split(rawDrive, ",")
+		for _, v := range list {
+			drives = append(drives, godo.DropletDriveRequest{ID: v})
+		}
+	}
+	return drives
 }
 
 func extractUserData(userData, filename string) (string, error) {

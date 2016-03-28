@@ -107,4 +107,10 @@ const (
 
 	// ArgOutput is an output type argument.
 	ArgOutput = "output"
+
+	ArgDriveSize   = "size"
+	ArgDriveDesc   = "desc"
+	ArgDriveRegion = "region"
+	ArgDriveID     = "id"
+	ArgDriveList   = "drives"
 )

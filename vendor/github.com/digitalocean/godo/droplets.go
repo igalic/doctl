@@ -182,6 +182,11 @@ type DropletCreateRequest struct {
 	IPv6              bool                  `json:"ipv6"`
 	PrivateNetworking bool                  `json:"private_networking"`
 	UserData          string                `json:"user_data,omitempty"`
+	Drives            []DropletDriveRequest `json:"drives,omitempty"`
+}
+
+type DropletDriveRequest struct {
+	ID string `json:"id"`
 }
 
 // DropletMultiCreateRequest is a request to create multiple droplets.

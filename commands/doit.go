@@ -114,6 +114,8 @@ func computeCmd() *Command {
 	cmd.AddCommand(SSHKeys())
 	cmd.AddCommand(SSH())
 
+	cmd.AddCommand(Drive())
+	cmd.AddCommand(DriveAction())
 	return cmd
 }
 
@@ -246,6 +248,8 @@ type CmdConfig struct {
 	Domains           func() do.DomainsService
 	Actions           func() do.ActionsService
 	Account           func() do.AccountService
+	Drives            func() do.DriveService
+	DriveActions      func() do.DriveActionService
 }
 
 // NewCmdConfig creates an instance of a CmdConfig.
@@ -270,7 +274,10 @@ func NewCmdConfig(ns string, dc doit.Config, out io.Writer, args []string) *CmdC
 		Domains:           func() do.DomainsService { return do.NewDomainsService(godoClient) },
 		Actions:           func() do.ActionsService { return do.NewActionsService(godoClient) },
 		Account:           func() do.AccountService { return do.NewAccountService(godoClient) },
+		Drives:            func() do.DriveService { return do.NewDriveService(godoClient) },
+		DriveActions:      func() do.DriveActionService { return do.NewDriveActionService(godoClient) },
 	}
+
 }
 
 // Display displayes the output from a command.

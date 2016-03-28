@@ -16,6 +16,7 @@ package commands
 import (
 	"fmt"
 	"io"
+	"strconv"
 	"text/tabwriter"
 
 	"github.com/digitalocean/doctl/do"
@@ -258,6 +259,52 @@ func (d *droplet) KV() []map[string]interface{} {
 	}
 
 	return out
+}
+
+type drive struct {
+	drives []do.Drive
+}
+
+var _ Displayable = &drive{}
+
+func (a *drive) JSON(out io.Writer) error {
+	return writeJSON(a.drives, out)
+
+}
+
+func (a *drive) Cols() []string {
+	return []string{
+		"ID", "Name", "Size", "Region", "Droplet ID",
+	}
+
+}
+
+func (a *drive) ColMap() map[string]string {
+	return map[string]string{
+		"ID": "ID", "Name": "Name", "Size": "Size", "Region": "Region", "Droplet ID": "Droplet ID",
+	}
+
+}
+
+func (a *drive) KV() []map[string]interface{} {
+	out := []map[string]interface{}{}
+	for _, drive := range a.drives {
+		m := map[string]interface{}{
+			"ID":     drive.ID,
+			"Name":   drive.Name,
+			"Size":   strconv.FormatInt(drive.SizeGB, 10) + " GiB",
+			"Region": drive.Region.Slug,
+		}
+		m["Droplet ID"] = "x"
+		if drive.DropletID != 0 {
+			m["Droplet ID"] = drive.DropletID
+
+		}
+		out = append(out, m)
+
+	}
+	return out
+
 }
 
 type floatingIP struct {
